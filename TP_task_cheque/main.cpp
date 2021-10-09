@@ -10,10 +10,10 @@
 using namespace std;
 
 vector<Product> list_products = { {"Курица", 189.99}, {"Макароны", 49.99}, {"Вода бутилированная", 20.99}, 
-	{"Яйца куриные", 49.99},{"Свинина", 239.99}, {"Сахар", 59.99}, {"Гречка", 39.99}, {"Сыр", 129.99} };
-vector<Cheque> list_purchases;
+	{"Яйца куриные", 49.99},{"Свинина", 239.99}, {"Сахар", 59.99}, {"Гречка", 39.99}, {"Сыр", 129.99} }; // список товаров
+vector<Cheque> list_purchases; // список "чеков"
 
-void print_list_products()
+void print_list_products() // вывод списка товаров
 {
 	cout << "Список товаров, доступных к покупке: " << endl;
 	for (int i = 0; i < list_products.size(); i++)
@@ -22,10 +22,10 @@ void print_list_products()
 	}
 }
 
-void print_list_purchases()
+void print_list_purchases() // вывод корзины
 {
 	cout << "Товары в корзине: " << endl;
-	if (list_purchases.size() != 0)
+	if (list_purchases.size() != 0) // проверка на пустоту
 	{
 		for (int i = 0; i < list_purchases.size(); i++)
 		{
@@ -37,19 +37,19 @@ void print_list_purchases()
 		cout << "Корзина пуста." << endl;
 }
 
-void process_purchase()
+void process_purchase() // обработка выбора товара для добавления
 {
 	cout << "Что вы хотите приобрести?" << endl;
 	print_list_products();
 	int id;
 	int count;
 	int input_flag = 1;
-	while (input_flag)
+	while (input_flag) // цикл обработки
 	{
 		cin >> id;
-		if (cin.fail() || id < 0 || id >= list_products.size()) // если введен не пункт меню
+		if (cin.fail() || id < 0 || id >= list_products.size()) // если выбран неверный товар
 		{
-			cin.clear();
+			cin.clear(); 
 			cout << "Выбран неверный товар. Попробуйте еще раз: " << endl;
 		}
 		else
@@ -57,10 +57,10 @@ void process_purchase()
 			cout << "Введите количество товара: " << endl;
 			
 			int flag = 1;
-			while (flag)
+			while (flag) // обработка количества товара
 			{
 				cin >> count;
-				if (cin.fail() || count < 0 || id > INT32_MAX) // если введен не пункт меню
+				if (cin.fail() || count < 0 || id > INT32_MAX) // если введено не корректное количество
 				{
 					cin.clear();
 					cout << "Введено некорректное количество, попробуйте еще раз:  " << endl;
@@ -69,31 +69,31 @@ void process_purchase()
 				{
 					flag = 0;
 				}
-				cin.ignore(32767, '\n');
+				cin.ignore(32767, '\n'); // игнорирование остатка ввода 
 			}
 			cout << "Ввод завершен, нажмите Enter для продолжения." << endl;
 			input_flag = 0;
 		}
-		cin.ignore(32767, '\n');
+		cin.ignore(32767, '\n'); // игнорирование остатка ввода 
 		
 	}
-	Cheque cheq = { list_products[id], count};
+	Cheque cheq = { list_products[id], count}; // создание объекта "чека" и добавление в лист
 	list_purchases.push_back(cheq);
 }
 
-void delete_purchase()
+void delete_purchase() // удаление товара
 {
-	if (list_purchases.size() > 0)
+	if (list_purchases.size() > 0) // проверка на пустоту
 	{
 		cout << "Выберите, какой товар вы хотите удалить: " << endl;
 		print_list_purchases();
 		vector<Cheque>::iterator id = list_purchases.begin();
 		int i;
 		int flag = 1;
-		while (flag)
+		while (flag) // обработка номера товара в списке
 		{
 			cin >> i;
-			if (cin.fail() || i < 0 || i >= list_purchases.size()) // если введен не пункт меню
+			if (cin.fail() || i < 0 || i >= list_purchases.size()) // если введен неверный номер
 			{
 				cin.clear();
 				cout << "Выбран неверный товар. Попробуйте снова: " << endl;
@@ -101,7 +101,7 @@ void delete_purchase()
 			else
 			{
 				id += i;
-				list_purchases.erase(id);
+				list_purchases.erase(id); // удаление с помощью итератора
 				flag = 0;
 			}
 			cin.ignore(32767, '\n');
@@ -111,34 +111,34 @@ void delete_purchase()
 		cout << "Корзина пуста, нечего удалять." << endl;
 }
 
-string cashiers[3] = { "Филимоненко Г.С", "Кардимонов А. В.", "Архипова С. С." };
+string cashiers[3] = { "Филимоненко Г.С", "Кардимонов А. В.", "Архипова С. С." }; // список кассиров для рандома
 
-void print_cheque()
+void print_cheque() // запись чека в файл
 {
-	time_t now = time(0);
+	time_t now = time(0); // получение локального времени в секундах
 	srand(now);
 	tm* ltm = localtime(&now);
 	ofstream fout;
-	fout.open("output.txt", ofstream::app);
+	fout.open("output.txt", ofstream::app); // запись первоначальной случайной и локальной информации
 	fout << '\n';
 	fout << "ФИО Кассира: " << cashiers[rand() % 3] << endl;
 	fout << "Дата: " << ltm->tm_mday << "." << 1+ltm->tm_mon << "." << 1900 + ltm->tm_year << endl;
 	fout << "Время покупки: " <<  ltm->tm_hour << ":" <<  ltm->tm_min << ":" <<  ltm->tm_sec << endl;
 	fout.close();
-	if (list_purchases.size() > 0)
+	if (list_purchases.size() > 0) // запись товаров, если корзина не пустая
 	{
 		for (int i = 0; i < list_purchases.size(); i++)
 		{
 			list_purchases[i].file_save();
 		}
 	}
-	fout.open("output.txt", ofstream::app);
+	fout.open("output.txt", ofstream::app); // добавление основной конечной информации
 	fout << "ООО 'Шестерочка'" << endl;
 	fout << "СПАСИБО ЗА ПОКУПКУ!" << endl;
 	fout.close();
 }
 
-void print_menu()
+void print_menu() // вывод меню на экран
 {
 	cout << "1. Просмотр списка товаров." << endl;
 	cout << "2. Добавление товара в корзину." << endl;
